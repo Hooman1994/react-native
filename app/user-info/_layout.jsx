@@ -8,7 +8,9 @@ const UserInfo = () => {
   return (
     <View className="flex-1 items-center justify-start p-5 gap-2">
       <Text className="font-iranSansRegular">نام و نام خانوادگی</Text>
-      <Text>{fullName ? fullName : "No user selected"}</Text>
+      <Text className="font-iranSansBold">
+        {fullName ? fullName : "No user selected"}
+      </Text>
     </View>
   );
 };

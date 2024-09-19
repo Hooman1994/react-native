@@ -5,6 +5,7 @@ import {
   Button,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -35,71 +36,73 @@ const Home = () => {
   return (
     <>
       <Header />
-      <View className="flex-1 items-center justify-center gap-5">
-        <Text className="font-iranSansBold text-lg">به شارینت خوش آمدید</Text>
-        <Link href={"/qr-scan"}>
-          <LinearGradient
-            colors={["#eeaeca", "#94bde9"]}
-            style={{
-              padding: 10,
-              borderRadius: 10,
-              alignItems: "center",
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View className="flex-1 items-center justify-center gap-5">
+          <Text className="font-iranSansBold text-lg">به شارینت خوش آمدید</Text>
+          <Link href={"/qr-scan"}>
+            <LinearGradient
+              colors={["#eeaeca", "#94bde9"]}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                alignItems: "center",
+              }}
+            >
+              <Text className="font-iranSansBold text-white">اسکن کد QR</Text>
+            </LinearGradient>
+          </Link>
+          <Pressable
+            className="flex my-3 w-44"
+            title={title}
+            onPress={() => {
+              getCurrentLocation();
             }}
           >
-            <Text className="font-iranSansBold text-white">اسکن کد QR</Text>
-          </LinearGradient>
-        </Link>
-        <Pressable
-          className="flex my-3 w-44"
-          title={title}
-          onPress={() => {
-            getCurrentLocation();
-          }}
-        >
-          <LinearGradient
-            colors={["#c2a3ff", "#ffb677"]}
-            style={{
-              padding: 10,
-              borderRadius: 10,
-              alignItems: "center",
+            <LinearGradient
+              colors={["#c2a3ff", "#ffb677"]}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                alignItems: "center",
+              }}
+            >
+              <Text className="font-iranSansBold text-white">{title}</Text>
+            </LinearGradient>
+          </Pressable>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
             }}
           >
-            <Text className="font-iranSansBold text-white">{title}</Text>
-          </LinearGradient>
-        </Pressable>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              {message?.coords ? (
-                <View className="flex-col gap-1">
-                  <Text className="font-iranSansBold">
-                    {"lat: " + message?.coords?.latitude}
-                  </Text>
-                  <Text className="font-iranSansBold">
-                    {"lon: " + message?.coords?.longitude}
-                  </Text>
-                </View>
-              ) : (
-                <Text>{message}</Text>
-              )}
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Close</Text>
-              </Pressable>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                {message?.coords ? (
+                  <View className="flex-col gap-1">
+                    <Text className="font-iranSansBold">
+                      {"lat: " + message?.coords?.latitude}
+                    </Text>
+                    <Text className="font-iranSansBold">
+                      {"lon: " + message?.coords?.longitude}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text>{message}</Text>
+                )}
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={styles.textStyle}>Close</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
-        </Modal>
-      </View>
+          </Modal>
+        </View>
+      </ScrollView>
     </>
   );
 };

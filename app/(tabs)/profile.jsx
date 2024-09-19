@@ -4,6 +4,7 @@ import {
   Image,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -25,6 +26,9 @@ const Profile = () => {
     { name: "حسین", lastName: "وهابی" },
     { name: "جواد", lastName: "زرگر" },
     { name: "روح اله", lastName: "راستگو" },
+    { name: "فرزاد", lastName: "رضایی" },
+    { name: "نرگس", lastName: "عبداللهی" },
+    { name: "مهرداد", lastName: "شعبانزاده" },
   ];
 
   useEffect(() => {
@@ -44,56 +48,60 @@ const Profile = () => {
   };
 
   return (
-    <View className="flex-1 items-center justify-start p-5 gap-2">
-      <View className="flex-row gap-1">
-        <Link href={"/user-info"} asChild>
-          <Pressable className="shadow-2xl bg-white rounded-full p-3">
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <View className="flex-1 items-center justify-start p-5 gap-2">
+        <View className="flex-row gap-1">
+          <View className="shadow-2xl bg-white rounded-full p-3">
             <Image
               source={icons.profile}
               resizeMode="contain"
               className="w-12 h-12"
             />
-          </Pressable>
-        </Link>
-      </View>
-      <View className="flex justify-center gap-2 items-end">
-        {employees.map((employee, index) => (
-          <View
-            className="flex bg-[#DDDDDD] justify-center items-center p-3 rounded-xl min-w-[100px]"
-            key={index}
-          >
-            <Pressable onPress={() => handlePress(employee)}>
-              <Text className="font-iranSansRegular">{employee.name}</Text>
-              <Text className="font-iranSansRegular">{employee.lastName}</Text>
-            </Pressable>
-          </View>
-        ))}
-      </View>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View className="flex-row gap-1">
-              <Text className="font-iranSansBold">Hooman</Text>
-              <Text className="font-iranSansBold">Rahimpour</Text>
-            </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Close</Text>
-            </Pressable>
           </View>
         </View>
-      </Modal>
-    </View>
+        <View className="flex flex-row flex-wrap w-full justify-center gap-2 items-end">
+          {employees.map((employee, index) => (
+            <View
+              className="flex bg-[#DDDDDD] justify-center items-center p-3 rounded-xl min-w-[100px]"
+              key={index}
+            >
+              <Link href={"/user-info"} asChild>
+                <Pressable onPress={() => handlePress(employee)}>
+                  <Text className="font-iranSansRegular">{employee.name}</Text>
+                  <Text className="font-iranSansRegular">
+                    {employee.lastName}
+                  </Text>
+                </Pressable>
+              </Link>
+            </View>
+          ))}
+        </View>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View className="flex-row gap-1">
+                <Text className="font-iranSansBold">Hooman</Text>
+                <Text className="font-iranSansBold">Rahimpour</Text>
+              </View>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Close</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </ScrollView>
   );
 };
 

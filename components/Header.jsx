@@ -11,12 +11,21 @@ const Header = () => {
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white",
+        position: "relative",
       }}
     >
       <Image
         resizeMode="contain"
         style={{ width: 96, height: 40 }}
         source={constants.logo}
+      />
+      <Image
+        style={{
+          position: "absolute",
+          top: "auto",
+          left: 20,
+        }}
+        source={constants.notification}
       />
     </View>
   );

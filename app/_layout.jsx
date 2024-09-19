@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router/stack";
 import { NativeWindStyleSheet } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
-import WebSocket from "react-native-websocket";
-import { Image, Text, ToastAndroid, View } from "react-native";
+import { ScrollView, Image, Text, ToastAndroid, View } from "react-native";
 import { useFonts } from "expo-font";
-import Loading from "../assets/images/Loading.gif"
+import Loading from "../assets/images/Loading.gif";
+import WebSocket from "react-native-websocket";
 
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
 
 const RootLayout = () => {
-  const [loading, setLoading] = useState(false);
-  const [fontsLoaded, error] = useFonts({
+  const [loading, setLoading] = useState(true);
+  const [fontsLoaded] = useFonts({
     "IranSans-Bold": require("../assets/fonts/IRANSansXFaNum-Bold.ttf"),
     "IranSans-Light": require("../assets/fonts/IRANSansXFaNum-Light.ttf"),
     "IranSans-Regular": require("../assets/fonts/IRANSansXFaNum-Regular.ttf"),
@@ -31,42 +31,46 @@ const RootLayout = () => {
         25,
         250
       );
+
       ws.onopen = () => {
-        // Connection opened
         console.log("WebSocket connection opened");
         ToastAndroid.show("Hello, server!", ToastAndroid.LONG);
-        ws.send("Hello, server!"); // Send a message to the server
+        ws.send("Hello, server!");
       };
+
       ws.onmessage = (e) => {
-        // Receive a message from the server
         console.log(e.data);
         ToastAndroid.show(e.data, ToastAndroid.LONG);
       };
+
       ws.onerror = (e) => {
-        // An error occurred
         console.log(e.message);
         ToastAndroid.show(e.message, ToastAndroid.LONG);
       };
+
       ws.onclose = (e) => {
-        // Connection closed
         console.log(e.code, e.reason);
         ToastAndroid.show(e.reason, ToastAndroid.LONG);
       };
-    } else {
-      setLoading(true);
     }
   }, [ws, fontsLoaded]);
+
+  if (!fontsLoaded || loading) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View className="flex-col items-center justify-center h-full">
+          <Image source={Loading} className="w-52 h-52" />
+          <Text style={{ fontFamily: "IranSans-Bold" }}>
+            لطفا شکیبایی فرمایید
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {loading ? (
-        <View className="flex-col items-center justify-center h-full">
-          <Image
-            source={Loading}
-            className="w-52 h-52"
-          />
-          <Text className="font-iranSansBold">لطفا شکیبایی فرمایید</Text>
-        </View>
-      ) : (
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
@@ -92,7 +96,7 @@ const RootLayout = () => {
             }}
           />
         </Stack>
-      )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
