@@ -47,6 +47,14 @@
         {
           "fonts": ["./assets/fonts/IRANSansXFaNum-Regular.ttf"]
         }
+      ],
+      [
+        "expo-asset",
+        {
+          "packagerOpts": {
+            "assetExts": ["svg", "png", "jpg", "jpeg"]
+          }
+        }
       ]
     ],
     "experiments": {
@@ -63,6 +71,22 @@
     "fonts": [
       "./assets/fonts/IRANSansX-Regular.ttf",
       "./assets/fonts/IRANSansX-Bold.ttf"
-    ]
+    ],
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "sourceExts": [
+        "expo.ts",
+        "expo.tsx",
+        "expo.js",
+        "expo.jsx",
+        "ts",
+        "tsx",
+        "js",
+        "jsx",
+        "json",
+        "wasm",
+        "svg"
+      ]
+    }
   }
 }

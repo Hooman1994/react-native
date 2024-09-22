@@ -1,6 +1,7 @@
 import { View, Text, Image } from "react-native";
 import React from "react";
 import constants from "../constants/images";
+import Notification from "../assets/images/notification.svg";
 
 const Header = () => {
   return (
@@ -19,13 +20,14 @@ const Header = () => {
         style={{ width: 96, height: 40 }}
         source={constants.logo}
       />
-      <Image
+      <Notification
+        width={25}
+        height={25}
         style={{
           position: "absolute",
           top: "auto",
           left: 20,
         }}
-        source={constants.notification}
       />
     </View>
   );
