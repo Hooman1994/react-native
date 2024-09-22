@@ -69,7 +69,7 @@ const RootLayout = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F0F5FA]">
+    <SafeAreaView className="flex-1 bg-background">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -83,7 +83,7 @@ const RootLayout = () => {
                 fontSize: 20,
               },
               headerStyle: {
-                backgroundColor: "#F0F5FA",
+                backgroundColor: "#F0F5FA", // or use bg-background if Tailwind applies correctly
               },
             }}
           />

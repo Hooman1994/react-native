@@ -60,7 +60,7 @@ const Layout = () => {
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
           shadowRadius: 3.84,
-          elevation: 5, // For Android
+          elevation: 5,
         },
         tabBarShowLabel: false,
       }}
