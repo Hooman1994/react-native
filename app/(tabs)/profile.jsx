@@ -49,7 +49,7 @@ const Profile = () => {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View className="flex-1 items-center justify-start p-5 gap-2">
+      <View className="flex-1 items-center justify-start p-5 gap-2 bg-backgroundTheme">
         <View className="flex-row gap-1">
           <View className="shadow-2xl bg-white rounded-full p-3">
             <Image

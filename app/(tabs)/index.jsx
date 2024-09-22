@@ -36,8 +36,8 @@ const Home = () => {
   return (
     <>
       <Header />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 items-center justify-center gap-5">
+      <ScrollView contentContainerStyle={{ flexGrow: 1}}>
+        <View className="flex-1 items-center justify-center gap-5 bg-backgroundTheme">
           <Text className="font-iranSansBold text-lg">به شارینت خوش آمدید</Text>
           <Link href={"/qr-scan"}>
             <LinearGradient

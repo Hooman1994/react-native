@@ -13,7 +13,7 @@ const deviceWidth = Dimensions.get("window").width;
 
 const Map = () => {
   return (
-      <View style={{ flex: 1 }}>
+      <View className="flex-1 bg-backgroundTheme">
         {Platform.OS === "web" ? (
           <iframe
             src="https://emapna.com"

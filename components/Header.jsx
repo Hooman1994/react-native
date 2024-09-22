@@ -11,8 +11,8 @@ const Header = () => {
         height: 60,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white",
         position: "relative",
+        backgroundColor:"#F0F5FA"
       }}
     >
       <Image

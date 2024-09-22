@@ -69,7 +69,7 @@ const RootLayout = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView className="flex-1 bg-[#F0F5FA]">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -81,6 +81,9 @@ const RootLayout = () => {
               headerTitleStyle: {
                 fontFamily: "IranSans-Bold",
                 fontSize: 20,
+              },
+              headerStyle: {
+                backgroundColor: "#F0F5FA",
               },
             }}
           />
