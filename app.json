@@ -27,7 +27,11 @@
         "googleMaps": {
           "apiKey": "AIzaSyCirqmJA_er_Ai4CdxoOIAZQFTFB6rmCOg"
         }
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -45,14 +49,21 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/IRANSansXFaNum-Regular.ttf"]
+          "fonts": [
+            "./assets/fonts/IRANSansXFaNum-Regular.ttf"
+          ]
         }
       ],
       [
         "expo-asset",
         {
           "packagerOpts": {
-            "assetExts": ["svg", "png", "jpg", "jpeg"]
+            "assetExts": [
+              "svg",
+              "png",
+              "jpg",
+              "jpeg"
+            ]
           }
         }
       ]
@@ -87,6 +98,7 @@
         "wasm",
         "svg"
       ]
-    }
+    },
+    "owner": "hoomanium"
   }
 }
