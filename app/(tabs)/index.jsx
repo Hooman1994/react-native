@@ -9,15 +9,22 @@ import {
   StyleSheet,
   Text,
   View,
+  Dimensions,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import Header from "../../components/Header";
+import Carousel from "react-native-reanimated-carousel";
+import axios from "axios";
+import CustomCarousel from "../../components/CustomCarousel";
 
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("موقعیت مکانی");
   const [message, setMessage] = useState("");
+  const [sliderItems, setSliderItems] = useState([]);
+  const width = Dimensions.get("window").width;
 
   async function getCurrentLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -33,11 +40,53 @@ const Home = () => {
     return setMessage(location);
   }
 
+  useEffect(() => {
+    axios
+      .get("https://gen.emapna.com/api/appslider/getAll")
+      .then((result) => {
+        setSliderItems(result.data);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <>
       <Header />
-      <ScrollView contentContainerStyle={{ flexGrow: 1}}>
-        <View className="flex-1 items-center justify-center gap-5 bg-backgroundTheme">
+      {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }}> */}
+        <View className="flex-1 items-center justify-start gap-5 bg-backgroundTheme">
+          {/* <Carousel
+            loop
+            width={width}
+            height={width / 2}
+            autoPlay={true}
+            data={sliderItems}
+            scrollAnimationDuration={2000}
+            onSnapToItem={(index) => {
+              // console.log("current index:", index)
+            }}
+            renderItem={({ item, index }) => (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  margin: 15,
+                  }}
+                  >
+                  <Image
+                  borderRadius={10}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: 100 }}
+                  source={{
+                    uri: item.image.dataUrl,
+                  }}
+                />
+              </View>
+              )}
+              /> */}
+
+          <View  style={{maxWidth:"300px"}}>
+            <CustomCarousel items={sliderItems} />
+          </View>
           <Text className="font-iranSansBold text-lg">به شارینت خوش آمدید</Text>
           <Link href={"/qr-scan"}>
             <LinearGradient
@@ -102,7 +151,7 @@ const Home = () => {
             </View>
           </Modal>
         </View>
-      </ScrollView>
+      {/* </ScrollView> */}
     </>
   );
 };
