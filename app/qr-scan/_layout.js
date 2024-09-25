@@ -1,19 +1,23 @@
 import { Camera, CameraView } from "expo-camera";
+import { useRouter } from "expo-router"; // Import useRouter for navigation
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
+import CustomText from "../../components/CustomText";
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState("");
+  const router = useRouter(); // Initialize the router for navigation
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -30,6 +34,39 @@ export default function App() {
     setScanned(true);
     setText(data);
   };
+
+  function handleCPID(data) {
+    const ws = new WebSocket("wss://dgw.emapna.com/");
+
+    ws.onopen = () => {
+      console.log("WebSocket connection opened.");
+
+      ws.send(
+        JSON.stringify({
+          action: "v2_newCPID",
+          cpID: data,
+          token:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGIyNGJjMjliYTcwMDAxM2VkMDdhZSIsInBob25lIjoiOTg5MzUzNTg2ODYzIiwicGF5bG9hZFR5cGUiOiJjaGFyZ2VyVXNlckxvZ2luIiwicHJlZml4ZSI6OTgsImlhdCI6MTcyNzI0NzMwNCwiZXhwIjoxNzI4NDU2OTA0fQ.UHEbdU7NGl88dbOWPV2EHDY5AZ0ktXySsKi0QPi0bs4",
+        })
+      );
+    };
+
+    ws.onmessage = (message) => {
+      console.log("Message from server:", message.data);
+      const parsedMessage = JSON.parse(message.data);
+      if (parsedMessage && parsedMessage.action === "Connectors") {
+        router.push("/start-charging");
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+  }
 
   if (hasPermission === null) {
     return (
@@ -80,6 +117,17 @@ export default function App() {
           value={text}
           placeholder="شناسه شارژر را وارد کنید"
         />
+        <Pressable
+          onPress={() => {
+            handleCPID(text);
+          }}
+        >
+          <View className="flex justify-center items-center w-full">
+            <CustomText className="bg-green justify-center items-center text-white text-xs font-iranSansBold">
+              شروع شارژ
+            </CustomText>
+          </View>
+        </Pressable>
       </SafeAreaView>
     </ScrollView>
   );

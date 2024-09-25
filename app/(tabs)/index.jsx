@@ -1,30 +1,28 @@
+import axios from "axios";
+import * as Location from "expo-location";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Button,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
-  Dimensions,
-  Image,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import * as Location from "expo-location";
-import Header from "../../components/Header";
-import Carousel from "react-native-reanimated-carousel";
-import axios from "axios";
 import CustomCarousel from "../../components/CustomCarousel";
+import CustomText from "../../components/CustomText";
+import DashboardCard from "../../components/DashboardCard";
+import Header from "../../components/Header";
+import Scanning from "../../assets/images/scanning.svg";
+import Wallet from "../../assets/images/wallet.svg";
+import Car from "../../assets/images/car.svg";
 
 const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("موقعیت مکانی");
   const [message, setMessage] = useState("");
   const [sliderItems, setSliderItems] = useState([]);
-  const width = Dimensions.get("window").width;
 
   async function getCurrentLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -52,72 +50,54 @@ const Home = () => {
   return (
     <>
       <Header />
-      {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }}> */}
-        <View className="flex-1 items-center justify-start gap-5 bg-backgroundTheme">
-          {/* <Carousel
-            loop
-            width={width}
-            height={width / 2}
-            autoPlay={true}
-            data={sliderItems}
-            scrollAnimationDuration={2000}
-            onSnapToItem={(index) => {
-              // console.log("current index:", index)
-            }}
-            renderItem={({ item, index }) => (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  margin: 15,
-                  }}
-                  >
-                  <Image
-                  borderRadius={10}
-                  resizeMode="contain"
-                  style={{ width: "100%", height: 100 }}
-                  source={{
-                    uri: item.image.dataUrl,
-                  }}
-                />
-              </View>
-              )}
-              /> */}
-
-          <View  style={{maxWidth:"300px"}}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View className="flex-1 items-center justify-start bg-backgroundTheme">
+          <View>
             <CustomCarousel items={sliderItems} />
           </View>
-          <Text className="font-iranSansBold text-lg">به شارینت خوش آمدید</Text>
-          <Link href={"/qr-scan"}>
-            <LinearGradient
-              colors={["#eeaeca", "#94bde9"]}
-              style={{
-                padding: 10,
-                borderRadius: 10,
-                alignItems: "center",
-              }}
-            >
-              <Text className="font-iranSansBold text-white">اسکن کد QR</Text>
-            </LinearGradient>
-          </Link>
-          <Pressable
-            className="flex my-3 w-44"
-            title={title}
-            onPress={() => {
-              getCurrentLocation();
-            }}
-          >
-            <LinearGradient
-              colors={["#c2a3ff", "#ffb677"]}
-              style={{
-                padding: 10,
-                borderRadius: 10,
-                alignItems: "center",
-              }}
-            >
-              <Text className="font-iranSansBold text-white">{title}</Text>
-            </LinearGradient>
-          </Pressable>
+          <View className="w-full mt-2">
+            <DashboardCard />
+          </View>
+          <View className="w-full">
+            <View className="m-4">
+              <CustomText className="font-iranSansBold">شارژر عمومی</CustomText>
+            </View>
+            <View className="flex flex-row justify-around p-2 rounded-xl">
+              <View className="items-center gap-2">
+                <Pressable
+                  title={title}
+                  onPress={() => {
+                    getCurrentLocation();
+                  }}
+                >
+                  <View className="bg-white rounded-xl p-3">
+                    <Car width={48} height={48} />
+                  </View>
+                </Pressable>
+                <CustomText className="text-xs font-iranSansBold">
+                  شارژ اضطراری
+                </CustomText>
+              </View>
+              <View className="items-center gap-2">
+                <View className="bg-white rounded-xl p-3">
+                  <Wallet width={48} height={48} />
+                </View>
+                <CustomText className="text-xs font-iranSansBold">
+                  افزایش موجودی
+                </CustomText>
+              </View>
+              <View className="items-center gap-2">
+                <View className="bg-white rounded-xl p-3">
+                  <Link href={"/qr-scan"}>
+                    <Scanning width={48} height={48} />
+                  </Link>
+                </View>
+                <CustomText className="text-xs font-iranSansBold">
+                  شروع شارژ
+                </CustomText>
+              </View>
+            </View>
+          </View>
           <Modal
             animationType="fade"
             transparent={true}
@@ -131,27 +111,27 @@ const Home = () => {
               <View style={styles.modalView}>
                 {message?.coords ? (
                   <View className="flex-col gap-1">
-                    <Text className="font-iranSansBold">
+                    <CustomText className="font-iranSansBold">
                       {"lat: " + message?.coords?.latitude}
-                    </Text>
-                    <Text className="font-iranSansBold">
+                    </CustomText>
+                    <CustomText className="font-iranSansBold">
                       {"lon: " + message?.coords?.longitude}
-                    </Text>
+                    </CustomText>
                   </View>
                 ) : (
-                  <Text>{message}</Text>
+                  <CustomText>{message}</CustomText>
                 )}
                 <Pressable
                   style={[styles.button, styles.buttonClose]}
                   onPress={() => setModalVisible(!modalVisible)}
                 >
-                  <Text style={styles.textStyle}>Close</Text>
+                  <CustomText style={styles.textStyle}>Close</CustomText>
                 </Pressable>
               </View>
             </View>
           </Modal>
         </View>
-      {/* </ScrollView> */}
+      </ScrollView>
     </>
   );
 };

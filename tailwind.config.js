@@ -6,6 +6,8 @@ module.exports = {
       colors: {
         background: "#F0F5FA",
         backgroundTheme: "#F0F5FA",
+        green: "#388E3C",
+        purple: "#6E43A3",
         primary: "#161622",
         secondary: {
           DEFAULT: "#FF9C01",

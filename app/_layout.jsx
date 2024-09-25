@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Stack } from "expo-router/stack";
-import { NativeWindStyleSheet } from "nativewind";
+import React, { useEffect, useContext, useState } from "react";
+import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, Image, Text, ToastAndroid, View } from "react-native";
+import { ScrollView, Image, View } from "react-native";
 import { useFonts } from "expo-font";
 import Loading from "../assets/images/Loading.gif";
-import WebSocket from "react-native-websocket";
-
-NativeWindStyleSheet.setOutput({
-  default: "native",
-});
+import { WebSocketProvider } from "../assets/webSocketContext";
 
 const RootLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -19,88 +14,69 @@ const RootLayout = () => {
     "IranSans-Regular": require("../assets/fonts/IRANSansXFaNum-Regular.ttf"),
   });
 
-  const ws = new WebSocket("wss://dgw.emapna.com/");
-
   useEffect(() => {
     if (fontsLoaded) {
       setLoading(false);
-      ToastAndroid?.showWithGravityAndOffset(
-        "WS is Ready to use!",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        250
-      );
-
-      ws.onopen = () => {
-        console.log("WebSocket connection opened");
-        ToastAndroid.show("Hello, server!", ToastAndroid.LONG);
-        ws.send("Hello, server!");
-      };
-
-      ws.onmessage = (e) => {
-        console.log(e.data);
-        ToastAndroid.show(e.data, ToastAndroid.LONG);
-      };
-
-      ws.onerror = (e) => {
-        console.log(e.message);
-        ToastAndroid.show(e.message, ToastAndroid.LONG);
-      };
-
-      ws.onclose = (e) => {
-        console.log(e.code, e.reason);
-        ToastAndroid.show(e.reason, ToastAndroid.LONG);
-      };
     }
-  }, [ws, fontsLoaded]);
+  }, [fontsLoaded]);
 
-  if (!fontsLoaded || loading) {
+  if (loading || !fontsLoaded) {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View className="flex-col items-center justify-center h-full">
           <Image source={Loading} className="w-52 h-52" />
-          <Text style={{ fontFamily: "IranSans-Bold" }}>
-            لطفا شکیبایی فرمایید
-          </Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="qr-scan"
-            options={{
-              title: "اسکن QR",
-              headerTitleAlign: "center",
-              headerTitleStyle: {
-                fontFamily: "IranSans-Bold",
-                fontSize: 20,
-              },
-              headerStyle: {
-                backgroundColor: "#F0F5FA", // or use bg-background if Tailwind applies correctly
-              },
-            }}
-          />
-          <Stack.Screen
-            name="user-info"
-            options={{
-              title: "اطلاعات کاربر",
-              headerTitleAlign: "center",
-              headerTitleStyle: {
-                fontFamily: "IranSans-Bold",
-                fontSize: 20,
-              },
-            }}
-          />
-        </Stack>
-      </ScrollView>
-    </SafeAreaView>
+      <SafeAreaView className="flex-1 bg-background">
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="qr-scan"
+              options={{
+                title: "اسکن QR",
+                headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontFamily: "IranSans-Bold",
+                  fontSize: 20,
+                },
+                headerStyle: {
+                  backgroundColor: "#F0F5FA",
+                },
+              }}
+            />
+            <Stack.Screen
+              name="start-charging"
+              options={{
+                title: "شروع شارژ",
+                headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontFamily: "IranSans-Bold",
+                  fontSize: 20,
+                },
+                headerStyle: {
+                  backgroundColor: "#F0F5FA",
+                },
+              }}
+            />
+            <Stack.Screen
+              name="user-info"
+              options={{
+                title: "اطلاعات کاربر",
+                headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontFamily: "IranSans-Bold",
+                  fontSize: 20,
+                },
+              }}
+            />
+          </Stack>
+        </ScrollView>
+      </SafeAreaView>
   );
 };
 

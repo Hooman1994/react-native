@@ -1,20 +1,16 @@
-// File: RootLayout.js
+import React, { createContext } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { WebSocketProvider } from "./assets/webSocketContext.js";
+import { Slot } from "expo-router";
 
-import { NativeWindStyleSheet } from "nativewind";
-import React from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context"; // Correct import for SafeAreaView
-import NavigationTabs from "./app/_layout.jsx";
-
-NativeWindStyleSheet.setOutput({
-  default: "native",
-});
-
-const RootLayout = () => {
+const App = () => {
   return (
-    <SafeAreaProvider>
-      <NavigationTabs />
-    </SafeAreaProvider>
+    <WebSocketProvider>
+      <SafeAreaProvider>
+        <Slot />
+      </SafeAreaProvider>
+    </WebSocketProvider>
   );
 };
 
-export default RootLayout;
+export default App;

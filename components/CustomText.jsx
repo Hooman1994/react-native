@@ -1,10 +1,10 @@
+import { NativeWindStyleSheet } from "nativewind";
 import React from "react";
 import { Text, StyleSheet } from "react-native";
 
-
 NativeWindStyleSheet.setOutput({
-    default: "native",
-  });
+  default: "native",
+});
 
 const CustomText = (props) => {
   return <Text style={[styles.text, props.style]}>{props.children}</Text>;
