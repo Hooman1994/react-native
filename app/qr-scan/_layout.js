@@ -1,5 +1,5 @@
 import { Camera, CameraView } from "expo-camera";
-import { useRouter } from "expo-router"; // Import useRouter for navigation
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Button,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   View,
 } from "react-native";
 import CustomText from "../../components/CustomText";
@@ -17,7 +18,39 @@ export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState("");
-  const router = useRouter(); // Initialize the router for navigation
+  const [connectors, setConnectors] = useState([]);
+  const [chargingDataDetails, setChargingDataDetails] = useState({});
+  const [connectorId, setConnectorId] = useState(0);
+  const router = useRouter();
+  const [ws, setWs] = useState(null);
+  const [isWebSocketOpen, setIsWebSocketOpen] = useState(false); // Track WebSocket state
+
+  useEffect(() => {
+    const socket = new WebSocket("wss://tgw.emapna.com/");
+
+    socket.onopen = () => {
+      console.log("WebSocket connection opened.");
+      setIsWebSocketOpen(true); // WebSocket is open
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+      setIsWebSocketOpen(false); // WebSocket is closed
+    };
+
+    setWs(socket);
+
+    // Clean up WebSocket connection on unmount
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, []); // Empty dependency array ensures it runs only once
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -28,7 +61,7 @@ export default function App() {
     if (hasPermission === null) {
       getCameraPermissions();
     }
-  }, []);
+  }, [hasPermission]);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
@@ -36,35 +69,78 @@ export default function App() {
   };
 
   function handleCPID(data) {
-    const ws = new WebSocket("wss://dgw.emapna.com/");
-
-    ws.onopen = () => {
-      console.log("WebSocket connection opened.");
-
-      ws.send(
-        JSON.stringify({
-          action: "v2_newCPID",
-          cpID: data,
-          token:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGIyNGJjMjliYTcwMDAxM2VkMDdhZSIsInBob25lIjoiOTg5MzUzNTg2ODYzIiwicGF5bG9hZFR5cGUiOiJjaGFyZ2VyVXNlckxvZ2luIiwicHJlZml4ZSI6OTgsImlhdCI6MTcyNzI0NzMwNCwiZXhwIjoxNzI4NDU2OTA0fQ.UHEbdU7NGl88dbOWPV2EHDY5AZ0ktXySsKi0QPi0bs4",
-        })
-      );
-    };
+    if (!ws || !isWebSocketOpen) return; // Ensure WebSocket is open
+    ws.send(
+      JSON.stringify({
+        action: "v2_newCPID",
+        cpID: data,
+        token:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGIyNGJjMjliYTcwMDAxM2VkMDdhZSIsInBob25lIjoiOTg5MzUzNTg2ODYzIiwicGF5bG9hZFR5cGUiOiJjaGFyZ2VyVXNlckxvZ2luIiwicHJlZml4ZSI6OTgsImlhdCI6MTcyNzI1ODM4NywiZXhwIjoxNzI4NDY3OTg3fQ.5ZhOS1KpuSyYHFVfGAijHTRQO3mtSZoYhPNjScu6dfM",
+      })
+    );
 
     ws.onmessage = (message) => {
       console.log("Message from server:", message.data);
       const parsedMessage = JSON.parse(message.data);
       if (parsedMessage && parsedMessage.action === "Connectors") {
-        router.push("/start-charging");
+        setConnectors(parsedMessage.connectors);
       }
     };
+  }
 
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
+  useEffect(() => {
+    if (!ws || !isWebSocketOpen) return; // Ensure WebSocket is open
+
+    ws.send(
+      JSON.stringify({
+        action: "getAllChargers",
+        token:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGIyNGJjMjliYTcwMDAxM2VkMDdhZSIsInBob25lIjoiOTg5MzUzNTg2ODYzIiwicGF5bG9hZFR5cGUiOiJjaGFyZ2VyVXNlckxvZ2luIiwicHJlZml4ZSI6OTgsImlhdCI6MTcyNzI1ODM4NywiZXhwIjoxNzI4NDY3OTg3fQ.5ZhOS1KpuSyYHFVfGAijHTRQO3mtSZoYhPNjScu6dfM",
+      })
+    );
+
+    ws.onmessage = (message) => {
+      const parsedMessage = JSON.parse(message.data);
+      if (parsedMessage && parsedMessage.action === "chargeData") {
+        setChargingDataDetails(parsedMessage);
+      }
     };
+  }, [ws, isWebSocketOpen]);
 
-    ws.onclose = () => {
-      console.log("WebSocket connection closed.");
+  function handleStartCharging(data) {
+    setConnectorId(data.id);
+    if (!ws || !isWebSocketOpen) return; // Ensure WebSocket is open
+    ws.send(
+      JSON.stringify({
+        action: "userapproved",
+        cpID: text.toUpperCase(),
+        token:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGIyNGJjMjliYTcwMDAxM2VkMDdhZSIsInBob25lIjoiOTg5MzUzNTg2ODYzIiwicGF5bG9hZFR5cGUiOiJjaGFyZ2VyVXNlckxvZ2luIiwicHJlZml4ZSI6OTgsImlhdCI6MTcyNzI1ODM4NywiZXhwIjoxNzI4NDY3OTg3fQ.5ZhOS1KpuSyYHFVfGAijHTRQO3mtSZoYhPNjScu6dfM",
+        connectorId: data.id,
+        sendPush: false,
+      })
+    );
+    ws.onmessage = (message) => {
+      const parsedMessage = JSON.parse(message.data);
+      if (parsedMessage && parsedMessage.action === "chargeData") {
+        setChargingDataDetails(parsedMessage);
+      }
+    };
+  }
+
+  function handleStopCharging(data) {
+    if (!ws || !isWebSocketOpen) return; // Ensure WebSocket is open
+    ws.send(
+      JSON.stringify({
+        action: "userstop",
+        cpID: text.toUpperCase(),
+        connectorId: connectorId,
+        token:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGIyNGJjMjliYTcwMDAxM2VkMDdhZSIsInBob25lIjoiOTg5MzUzNTg2ODYzIiwicGF5bG9hZFR5cGUiOiJjaGFyZ2VyVXNlckxvZ2luIiwicHJlZml4ZSI6OTgsImlhdCI6MTcyNzI1ODM4NywiZXhwIjoxNzI4NDY3OTg3fQ.5ZhOS1KpuSyYHFVfGAijHTRQO3mtSZoYhPNjScu6dfM",
+      })
+    );
+    ws.onmessage = (message) => {
+      const parsedMessage = JSON.parse(message.data);
     };
   }
 
@@ -90,45 +166,81 @@ export default function App() {
       style={styles.container}
       contentContainerStyle={{ alignItems: "center", justifyContent: "center" }}
     >
-      <View style={styles.cameraContainer}>
-        <CameraView
-          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          barcodeScannerSettings={{
-            barcodeTypes: ["qr", "pdf417"],
-          }}
-          style={styles.camera}
-        />
-        {scanned && (
-          <Button
-            style={styles.button}
-            title={"Tap to Scan Again"}
-            onPress={() => {
-              setText("");
-              setScanned(false);
-            }}
-          />
-        )}
-      </View>
-      <SafeAreaView style={styles.inputContainer}>
-        <Text style={styles.title}>شناسه شارژر</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setText}
-          value={text}
-          placeholder="شناسه شارژر را وارد کنید"
-        />
-        <Pressable
-          onPress={() => {
-            handleCPID(text);
-          }}
-        >
-          <View className="flex justify-center items-center w-full">
-            <CustomText className="bg-green justify-center items-center text-white text-xs font-iranSansBold">
-              شروع شارژ
+      {connectors?.length > 0 ? (
+        <View className="flex gap-7 p-2">
+          {connectors.map((item, index) => {
+            return (
+              <Pressable
+                onPress={() => {
+                  handleStartCharging(item);
+                }}
+                key={index}
+              >
+                <View className="bg-slate-400 text-white rounded-lg p-4">
+                  <Text>{item.connectorName}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+          <View>
+            <CustomText>
+              Duration: {JSON.stringify(chargingDataDetails.duration)}
+              Voltage :{JSON.stringify(chargingDataDetails.voltage)}
             </CustomText>
+            <Pressable
+              onPress={() => {
+                handleStopCharging();
+              }}
+            >
+              <View className="bg-red-500 text-white rounded-lg p-4">
+                <Text>توقف شارژ</Text>
+              </View>
+            </Pressable>
           </View>
-        </Pressable>
-      </SafeAreaView>
+        </View>
+      ) : (
+        <>
+          <View style={styles.cameraContainer}>
+            <CameraView
+              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+              barcodeScannerSettings={{
+                barcodeTypes: ["qr", "pdf417"],
+              }}
+              style={styles.camera}
+            />
+            {scanned && (
+              <Button
+                style={styles.button}
+                title={"Tap to Scan Again"}
+                onPress={() => {
+                  setText("");
+                  setScanned(false);
+                }}
+              />
+            )}
+          </View>
+          <SafeAreaView style={styles.inputContainer}>
+            <Text style={styles.title}>شناسه شارژر</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setText}
+              value={text}
+              placeholder="شناسه شارژر را وارد کنید"
+            />
+            <Pressable
+              onPress={() => {
+                handleCPID(text);
+              }}
+            >
+              <View className="flex justify-center items-center w-full">
+                <CustomText className="bg-green p-4 justify-center items-center text-white text-xs font-iranSansBold">
+                  شروع شارژ
+                </CustomText>
+              </View>
+            </Pressable>
+          </SafeAreaView>
+        </>
+      )}
     </ScrollView>
   );
 }

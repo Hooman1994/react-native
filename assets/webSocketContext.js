@@ -8,7 +8,7 @@ export const WebSocketProvider = ({ children }) => {
   useEffect(() => {
     debugger;
 
-    const webSocket = new WebSocket("wss://dgw.emapna.com/");
+    const webSocket = new WebSocket("wss://tgw.emapna.com/");
 
     webSocket.onopen = () => {
       console.log("WebSocket connection opened.");
