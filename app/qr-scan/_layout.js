@@ -84,6 +84,7 @@ export default function App() {
       const parsedMessage = JSON.parse(message.data);
       if (parsedMessage && parsedMessage.action === "Connectors") {
         setConnectors(parsedMessage.connectors);
+        router.push("/start-charging");
       }
     };
   }

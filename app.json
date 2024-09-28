@@ -15,7 +15,8 @@
     "jsEngine": "hermes",
     "ios": {
       "jsEngine": "jsc",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hoomanium.reactnativeapp"
     },
     "android": {
       "adaptiveIcon": {

@@ -1,10 +1,10 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, Image, View } from "react-native";
 import { useFonts } from "expo-font";
 import Loading from "../assets/images/Loading.gif";
-import { WebSocketProvider } from "../assets/webSocketContext";
+import { WebSocketProvider } from "../assets/webSocketContext"; // Add it here
 
 const RootLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -31,6 +31,7 @@ const RootLayout = () => {
   }
 
   return (
+    <WebSocketProvider>
       <SafeAreaView className="flex-1 bg-background">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <Stack>
@@ -77,6 +78,7 @@ const RootLayout = () => {
           </Stack>
         </ScrollView>
       </SafeAreaView>
+    </WebSocketProvider>
   );
 };
 

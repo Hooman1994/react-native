@@ -6,7 +6,6 @@ export const WebSocketProvider = ({ children }) => {
   const [ws, setWs] = useState(null);
 
   useEffect(() => {
-    debugger;
 
     const webSocket = new WebSocket("wss://tgw.emapna.com/");
 
